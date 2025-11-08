@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Trip Planner (Free)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body{font-family:'Poppins',sans-serif;background:linear-gradient(to right,#e0f7fa,#e3f2fd);min-height:100vh;}
+    .card{background:white;border-radius:1rem;box-shadow:0 4px 10px rgba(0,0,0,0.1);padding:1.5rem;}
+  </style>
+</head>
+<body class="p-6 flex flex-col items-center">
+  <h1 class="text-4xl font-bold text-blue-600 mb-4">🌍 Smart Trip Planner</h1>
+  {% if message %}
+  <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6 rounded-lg w-full max-w-lg">{{ message }}</div>
+  {% endif %}
+
+  <form method="POST" class="bg-white rounded-xl shadow-md p-6 w-full max-w-md mb-10">
+    <label class="block font-semibold mb-2 text-gray-700">Destination City:</label>
+    <input type="text" name="city" placeholder="Enter city" required class="w-full border border-gray-300 rounded-lg px-3 py-2 mb-4 focus:ring-2 focus:ring-blue-400"/>
+    <label class="block font-semibold mb-2 text-gray-700">Number of Days:</label>
+    <input type="number" name="days" value="3" min="1" class="w-full border border-gray-300 rounded-lg px-3 py-2 mb-4 focus:ring-2 focus:ring-blue-400"/>
+    <button class="bg-blue-600 text-white font-semibold py-2 rounded-lg w-full hover:bg-blue-700">✈️ Generate Plan</button>
+  </form>
+
+  {% if weather %}
+  <div class="bg-white rounded-xl shadow-md p-5 w-full max-w-6xl mb-10 text-center">
+    <h2 class="text-2xl font-semibold text-blue-700 mb-4">🌦️  Weather Forecast for {{ city }}</h2>
+    <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      {% for d in weather %}
+      <div class="card">
+        <h3 class="text-blue-600 font-semibold mb-2">{{ d.date }}</h3>
+        <p>🌡️ {{ d.tmin }}°C – {{ d.tmax }}°C</p>
+        <p>🌧️ {{ d.rain }} mm rain</p>
+        <p class="text-sm text-gray-700 mt-2">{{ d.suggestion }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if transport %}
+  <div class="bg-white rounded-xl shadow-md p-5 w-full max-w-lg mb-8 text-center">
+    <h2 class="text-xl font-semibold text-green-700 mb-2">🚗 Local Transport</h2>
+    <p>{{ transport }}</p>
+  </div>
+  {% endif %}
+
+  {% if itinerary %}
+  <div class="w-full max-w-6xl mb-10">
+    <h2 class="text-2xl font-semibold text-blue-700 mb-4">🗓️ Day-wise Itinerary</h2>
+    <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+      {% for day in itinerary %}
+      <div class="card">
+        <h3 class="text-lg font-semibold text-blue-600 mb-2">Day {{ loop.index }}</h3>
+        {% for p in day %}
+        <div class="mb-3">
+          <img src="https://source.unsplash.com/400x250/?{{ p.name|urlencode }},{{ city|urlencode }}" class="rounded-lg mb-2 w-full h-48 object-cover"/>
+          <p class="font-semibold">🏛️ {{ p.name }}</p>
+          <p class="text-sm text-gray-600">📍 {{ p.address }}</p>
+        </div>
+        {% endfor %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if restaurants %}
+  <div class="w-full max-w-6xl mb-10">
+    <h2 class="text-2xl font-semibold text-red-600 mb-4">🍽️ Top Places to Eat</h2>
+    {% if restaurants|length == 0 %}
+      <p class="text-gray-600 italic">No restaurants found.</p>
+    {% else %}
+    <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+      {% for r in restaurants %}
+      <div class="card text-center">
+        <img src="https://source.unsplash.com/400x250/?restaurant,{{ city|urlencode }}" class="rounded-lg mb-2 w-full h-48 object-cover"/>
+        <h3 class="font-semibold">{{ r.name }}</h3>
+        <p class="text-sm text-gray-600">{{ r.address }}</p>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {% if hotels %}
+  <div class="w-full max-w-6xl mb-10">
+    <h2 class="text-2xl font-semibold text-green-600 mb-4">🏨 Top Places to Stay</h2>
+    {% if hotels|length == 0 %}
+      <p class="text-gray-600 italic">No hotels found.</p>
+    {% else %}
+    <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+      {% for h in hotels %}
+      <div class="card text-center">
+        <img src="https://source.unsplash.com/400x250/?hotel,{{ city|urlencode }}" class="rounded-lg mb-2 w-full h-48 object-cover"/>
+        <h3 class="font-semibold">{{ h.name }}</h3>
+        <p class="text-sm text-gray-600">{{ h.address }}</p>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+</body>
+</html>
